@@ -148,4 +148,86 @@ public class CombatTests
         StringAssert.Contains(result, messages.GetMessage("stats_weapon"));
         StringAssert.Contains(result, messages.GetMessage("stats_damage"));
     }
+
+    // Runs combat with scripted keyboard input and returns everything it printed.
+    private static string RunCombatWithInput(Combat combat, string input)
+    {
+        TextReader originalIn = Console.In;
+        TextWriter originalOut = Console.Out;
+        var output = new StringWriter();
+        try
+        {
+            Console.SetIn(new StringReader(input));
+            Console.SetOut(output);
+            combat.StartCombat();
+        }
+        finally
+        {
+            Console.SetIn(originalIn);
+            Console.SetOut(originalOut);
+        }
+        return output.ToString();
+    }
+
+    private static int CountOf(string text, string part) => text.Split(part).Length - 1;
+
+    [TestMethod]
+    [DoNotParallelize] // redirects the shared Console
+    public void InvalidCombatInput_AsksAgain_InsteadOfAttacking()
+    {
+        Player player = CreateTestPlayer();
+        player.HealthPoints = 1000;
+        Dragon dragon = CreateTestDragon();
+        dragon.HealthPoints = 1000;
+        Combat combat = new Combat(player, dragon, CreateEnglishMessages());
+
+        string output = RunCombatWithInput(combat, "x\nr\n");
+
+        Assert.IsTrue(combat.PlayerRetreated);
+        Assert.AreEqual(1, CountOf(output, "Invalid choice"));
+        Assert.AreEqual(1, CountOf(output, "attack the dragon"), "Only the opening attack should happen.");
+    }
+
+    [TestMethod]
+    [DoNotParallelize] // redirects the shared Console
+    public void EndedCombatInput_CountsAsRetreat()
+    {
+        Player player = CreateTestPlayer();
+        player.HealthPoints = 1000;
+        Dragon dragon = CreateTestDragon();
+        dragon.HealthPoints = 1000;
+        Combat combat = new Combat(player, dragon, CreateEnglishMessages());
+
+        string output = RunCombatWithInput(combat, "");
+
+        Assert.IsTrue(combat.PlayerRetreated);
+        Assert.AreEqual(1, CountOf(output, "attack the dragon"));
+    }
+
+    [TestMethod]
+    public void DragonHealth_NeverShownBelowZero()
+    {
+        Player player = CreateTestPlayer();
+        player.Strength = 20; // every attack roll hits
+        Dragon dragon = CreateTestDragon();
+        dragon.Agility = 0;   // every defense roll fails
+        dragon.HealthPoints = 1;
+
+        string output = player.Attack(dragon, CreateEnglishMessages());
+
+        Assert.AreEqual(0, dragon.HealthPoints);
+        StringAssert.Contains(output, "health points are now 0.");
+    }
+
+    [TestMethod]
+    public void AttackIntro_ReadsNaturallyForEveryOccupation()
+    {
+        Player player = CreateTestPlayer();
+        player.Occupation = "Archer";
+        player.Strength = 0; // miss, so only the intro matters
+
+        string output = player.Attack(CreateTestDragon(), CreateEnglishMessages());
+
+        StringAssert.StartsWith(output, "Archer by trade, you draw your long sword and attack the dragon.");
+    }
 }

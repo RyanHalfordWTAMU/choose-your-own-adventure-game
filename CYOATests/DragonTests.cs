@@ -153,6 +153,7 @@ public class GamePbi18Tests
     }
 
     [TestMethod]
+    [DoNotParallelize] // redirects the shared Console
     public void DragonDisplayStats_UsesLocalizedLabels()
     {
         Die die = new Die();
@@ -179,6 +180,7 @@ public class GamePbi18Tests
     }
 
     [TestMethod]
+    [DoNotParallelize] // redirects the shared Console
     public void HandleDragonEncounter_AttackPath_DisplaysEncounterFlowText()
     {
         Game game = new Game();
