@@ -152,6 +152,7 @@ public class Game
     private static readonly Dictionary<string, MerchantItem> MerchantMenu = new()
     {
         ["1"] = MerchantItem.MagicalArmor,
+        ["2"] = MerchantItem.Enchantment,
     };
     private const string MerchantLeaveChoice = "3";
 
@@ -204,6 +205,9 @@ public class Game
                 case PurchaseResult.AlreadyOwned:
                     Console.WriteLine(messages.GetMessage("merchant_already_owned"));
                     break;
+                case PurchaseResult.NotAvailable:
+                    Console.WriteLine(messages.GetMessage("invalid"));
+                    break;
             }
         }
     }
@@ -214,6 +218,8 @@ public class Game
         {
             MerchantItem.MagicalArmor => string.Format(messages.GetMessage("merchant_option_armor"),
                 number, Merchant.MagicalArmorHealthBonus, Merchant.ItemPrice),
+            MerchantItem.Enchantment when player.Weapon is { } weapon => string.Format(messages.GetMessage("merchant_option_enchant"),
+                number, messages.GetWeaponDisplayName(weapon), Merchant.EnchantmentDamageBonus, Merchant.ItemPrice),
             _ => throw new ArgumentOutOfRangeException(nameof(item), item, "Unknown merchant item.")
         };
     }

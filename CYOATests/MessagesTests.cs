@@ -352,6 +352,8 @@ public class MessagesTests
     [DataRow("merchant_menu_header")]
     [DataRow("merchant_option_armor")]
     [DataRow("merchant_option_leave")]
+    [DataRow("merchant_option_enchant")]
+    [DataRow("enchanted_weapon_format")]
     [DataRow("merchant_thanks")]
     [DataRow("merchant_not_enough_gold")]
     [DataRow("merchant_already_owned")]
@@ -383,6 +385,23 @@ public class MessagesTests
         StringAssert.Contains(string.Format(messages.GetMessage("merchant_gold"), 10), "10");
         StringAssert.StartsWith(string.Format(messages.GetMessage("merchant_option_armor"), "1", 8, 10), "1. ");
         StringAssert.StartsWith(string.Format(messages.GetMessage("merchant_option_leave"), "3"), "3. ");
+        StringAssert.StartsWith(string.Format(messages.GetMessage("merchant_option_enchant"), "2", "x", 4, 10), "2. ");
+        StringAssert.Contains(string.Format(messages.GetMessage("enchanted_weapon_format"), "WEAPON"), "WEAPON");
+    }
+
+    [TestMethod]
+    [DataRow("English", "Enchanted long sword")]
+    [DataRow("Spanish", "espada larga con encantamiento")]
+    [DataRow("French", "epee longue avec enchantement")]
+    [DataRow("Italian", "spada lunga con incantesimo")]
+    public void WeaponDisplayName_UsesEnchantedFormat(string language, string expected)
+    {
+        Messages messages = new Messages();
+        messages.SetCurrentLanguage(language);
+        messages.ReadDictionary();
+        Weapon weapon = new Weapon("long sword", 12, "-)=====>") { IsEnchanted = true };
+
+        Assert.AreEqual(expected, messages.GetWeaponDisplayName(weapon));
     }
 
     [TestMethod]

@@ -99,6 +99,13 @@ public class Messages
 
     public string TranslateWeaponForDisplay(string weaponType) => Lookup(_displayWeaponMap, weaponType);
 
+    /// <summary>The translated weapon name, wrapped as "Enchanted {weapon}" (per language) when enchanted.</summary>
+    public string GetWeaponDisplayName(Weapon weapon)
+    {
+        string name = TranslateWeaponForDisplay(weapon.Type);
+        return weapon.IsEnchanted ? string.Format(GetMessage("enchanted_weapon_format"), name) : name;
+    }
+
     // ---------- helpers ----------
 
     private static Dictionary<string, string> NewMap() => new(StringComparer.OrdinalIgnoreCase);

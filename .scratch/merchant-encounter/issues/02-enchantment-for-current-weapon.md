@@ -6,14 +6,18 @@ Reuse the Merchant, purchase results, Gold and menu from ticket 01. See `.scratc
 
 **Blocked by:** 01 (Merchant encounter with Magical Armor)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] The merchant menu lists `1` Magical Armor, `2` Enchant your weapon, `3` Leave, omitting whatever the player already owns
-- [ ] Buying the Enchantment with 10 gold returns *Purchased*, sets gold to 0, raises weapon max damage by 4 (e.g. dagger 6 → 10), and marks the weapon enchanted
-- [ ] Buying the Enchantment without enough gold returns *NotEnoughGold* and leaves gold and weapon unchanged
-- [ ] Buying the Enchantment when already owned returns *AlreadyOwned* and changes nothing
-- [ ] Buying one item and then trying the other returns *NotEnoughGold*
-- [ ] An Enchanted Weapon's damage rolls stay between 1 and the new maximum and can exceed the old maximum (tested over many rolls)
-- [ ] Character stats and pre-combat stats show the enchanted weapon name and the boosted max damage
-- [ ] The enchanted-name format and enchantment menu and messages exist in all four languages (covered by an automated test)
-- [ ] All existing and new tests pass
+- [x] The merchant menu lists `1` Magical Armor, `2` Enchant your weapon, `3` Leave, omitting whatever the player already owns
+- [x] Buying the Enchantment with 10 gold returns *Purchased*, sets gold to 0, raises weapon max damage by 4 (e.g. dagger 6 → 10), and marks the weapon enchanted
+- [x] Buying the Enchantment without enough gold returns *NotEnoughGold* and leaves gold and weapon unchanged
+- [x] Buying the Enchantment when already owned returns *AlreadyOwned* and changes nothing
+- [x] Buying one item and then trying the other returns *NotEnoughGold*
+- [x] An Enchanted Weapon's damage rolls stay between 1 and the new maximum and can exceed the old maximum (tested over many rolls)
+- [x] Character stats and pre-combat stats show the enchanted weapon name and the boosted max damage
+- [x] The enchanted-name format and enchantment menu and messages exist in all four languages (covered by an automated test)
+- [x] All existing and new tests pass
+
+## Comments
+
+Implemented: `MerchantItem.Enchantment` (+4 max damage), `Weapon.IsEnchanted`, `Messages.GetWeaponDisplayName` (per-language `enchanted_weapon_format`), menu option 2 in `Game`. Spanish/French/Italian use gender-neutral phrasing ("{0} con encantamiento", "{0} avec enchantement", "{0} con incantesimo") because an adjective would have to agree with each weapon's gender. Manually played: buy enchantment -> armor shows not-enough-gold -> north, dealing 10 damage with the enchanted dagger.

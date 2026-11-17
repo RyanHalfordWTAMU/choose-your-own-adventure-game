@@ -168,7 +168,7 @@ public class Player
 
         if (Weapon != null)
         {
-            lines.Add(messages.GetMessage("stats_weapon") + messages.TranslateWeaponForDisplay(Weapon.Type));
+            lines.Add(messages.GetMessage("stats_weapon") + messages.GetWeaponDisplayName(Weapon));
             lines.Add(messages.GetMessage("stats_damage") + Weapon.MaxDamage);
         }
 
@@ -205,7 +205,7 @@ public class Player
         output.Add(string.Format(
             messages.GetMessage("player_attack_intro"),
             messages.TranslateOccupationForDisplay(Occupation),
-            messages.TranslateWeaponForDisplay(Weapon.Type)
+            messages.GetWeaponDisplayName(Weapon)
         ));
 
         // If this fails to compile, change AsciiArt to whatever exists in Weapon.cs
