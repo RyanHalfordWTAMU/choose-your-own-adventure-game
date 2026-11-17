@@ -16,4 +16,13 @@ public class PlayerTests
 
         Assert.IsNull(player.Weapon);
     }
+
+    [TestMethod]
+    public void NewPlayer_StartsWithTenGoldAndNoArmor()
+    {
+        Player player = new Player();
+
+        Assert.AreEqual(10, player.Gold);
+        Assert.IsFalse(player.HasArmor);
+    }
 }

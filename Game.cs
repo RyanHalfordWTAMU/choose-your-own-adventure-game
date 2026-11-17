@@ -55,7 +55,7 @@ public class Game
                     }
                     else if (selectedPath == "south")
                     {
-                        Console.WriteLine(messages.GetMessage("south_path_narrative"));
+                        HandleMerchantEncounter(player, messages);
                     }
                     else if (selectedPath == "north")
                     {
@@ -139,11 +139,83 @@ public class Game
             if (input == "south" || input == "s")
                 return "south";
 
-            if (input == "exit" || input == "e")
+            // null means the input stream ended, so there's nothing left to ask.
+            if (input == null || input == "exit" || input == "e")
                 return "exit";
 
             Console.WriteLine(messages.GetMessage("path_invalid"));
         }
+    }
+
+    // Menu numbers stay fixed so they don't shift when an owned item is left off the list.
+    // They're formatted into the translated menu lines, so this is the only place they live.
+    private static readonly Dictionary<string, MerchantItem> MerchantMenu = new()
+    {
+        ["1"] = MerchantItem.MagicalArmor,
+    };
+    private const string MerchantLeaveChoice = "3";
+
+    private void HandleMerchantEncounter(Player player, Messages messages)
+    {
+        Merchant merchant = new Merchant();
+
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine(messages.GetMessage("merchant_intro"));
+        Console.ResetColor();
+
+        while (true)
+        {
+            var available = merchant.GetAvailableItems(player).ToList();
+
+            Console.WriteLine(string.Format(messages.GetMessage("merchant_gold"), player.Gold));
+            Console.WriteLine(messages.GetMessage("merchant_menu_header"));
+
+            foreach (var (number, menuItem) in MerchantMenu)
+            {
+                if (available.Contains(menuItem))
+                    Console.WriteLine(GetMerchantOptionText(number, menuItem, player, messages));
+            }
+
+            Console.WriteLine(string.Format(messages.GetMessage("merchant_option_leave"), MerchantLeaveChoice));
+            Console.Write(messages.GetMessage("enter_choice"));
+            string? input = Console.ReadLine()?.Trim();
+
+            // null means the input stream ended; treat it as leaving instead of looping forever.
+            if (input == null || input == MerchantLeaveChoice)
+            {
+                Console.WriteLine(messages.GetMessage("merchant_leave"));
+                return;
+            }
+
+            if (!MerchantMenu.TryGetValue(input, out MerchantItem item))
+            {
+                Console.WriteLine(messages.GetMessage("invalid"));
+                continue;
+            }
+
+            switch (merchant.Purchase(player, item))
+            {
+                case PurchaseResult.Purchased:
+                    Console.WriteLine(messages.GetMessage("merchant_thanks"));
+                    return;
+                case PurchaseResult.NotEnoughGold:
+                    Console.WriteLine(messages.GetMessage("merchant_not_enough_gold"));
+                    break;
+                case PurchaseResult.AlreadyOwned:
+                    Console.WriteLine(messages.GetMessage("merchant_already_owned"));
+                    break;
+            }
+        }
+    }
+
+    private static string GetMerchantOptionText(string number, MerchantItem item, Player player, Messages messages)
+    {
+        return item switch
+        {
+            MerchantItem.MagicalArmor => string.Format(messages.GetMessage("merchant_option_armor"),
+                number, Merchant.MagicalArmorHealthBonus, Merchant.ItemPrice),
+            _ => throw new ArgumentOutOfRangeException(nameof(item), item, "Unknown merchant item.")
+        };
     }
 
     private void HandleDragonEncounter(Player player, Dragon dragon, Messages messages)

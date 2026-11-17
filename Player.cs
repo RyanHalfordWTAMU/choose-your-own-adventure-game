@@ -12,6 +12,14 @@ public class Player
 
     public Weapon? Weapon { get; set; }
 
+    public const int StartingGold = 10;
+
+    // Spent at the Merchant. Every new player starts with the same amount.
+    public int Gold { get; set; } = StartingGold;
+
+    // True once the player has bought Magical Armor from the Merchant.
+    public bool HasArmor { get; set; }
+
     public void CreateCharacter(Messages messages)
     {
         Race = PromptForRace(messages);
@@ -146,11 +154,27 @@ public class Player
         Console.WriteLine(messages.GetMessage("stats_agility") + Agility);
         Console.WriteLine(messages.GetMessage("stats_health") + HealthPoints);
 
+        foreach (string line in GetEquipmentStatLines(messages))
+            Console.WriteLine(line);
+    }
+
+    /// <summary>
+    /// Weapon, gold and armor lines, shared by the character stats and the combat stats
+    /// so the two screens can't drift apart.
+    /// </summary>
+    public List<string> GetEquipmentStatLines(Messages messages)
+    {
+        var lines = new List<string>();
+
         if (Weapon != null)
         {
-            Console.WriteLine(messages.GetMessage("stats_weapon") + messages.TranslateWeaponForDisplay(Weapon.Type));
-            Console.WriteLine(messages.GetMessage("stats_damage") + Weapon.MaxDamage);
+            lines.Add(messages.GetMessage("stats_weapon") + messages.TranslateWeaponForDisplay(Weapon.Type));
+            lines.Add(messages.GetMessage("stats_damage") + Weapon.MaxDamage);
         }
+
+        lines.Add(messages.GetMessage("stats_gold") + Gold);
+        lines.Add(messages.GetMessage("stats_armor") + messages.GetMessage(HasArmor ? "item_magical_armor" : "stats_armor_none"));
+        return lines;
     }
 
     public int RollAttack()

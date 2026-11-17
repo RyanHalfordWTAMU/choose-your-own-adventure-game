@@ -344,6 +344,55 @@ public class MessagesTests
         Assert.AreEqual("artigli", messages.TranslateWeaponForDisplay("claws"));
     }
 
+    // The completeness test below compares against English, so English itself must
+    // have the merchant keys for that guard to cover them.
+    [TestMethod]
+    [DataRow("merchant_intro")]
+    [DataRow("merchant_gold")]
+    [DataRow("merchant_menu_header")]
+    [DataRow("merchant_option_armor")]
+    [DataRow("merchant_option_leave")]
+    [DataRow("merchant_thanks")]
+    [DataRow("merchant_not_enough_gold")]
+    [DataRow("merchant_already_owned")]
+    [DataRow("merchant_leave")]
+    [DataRow("item_magical_armor")]
+    [DataRow("stats_gold")]
+    [DataRow("stats_armor")]
+    [DataRow("stats_armor_none")]
+    public void English_HasMerchantMessageKey(string key)
+    {
+        Messages messages = new Messages();
+        messages.ReadDictionary();
+        Assert.AreNotEqual($"[{key}]", messages.GetMessage(key));
+    }
+
+    // A typo in a translated placeholder would crash the merchant menu at runtime,
+    // so format every language's merchant strings with the arguments Game passes.
+    [TestMethod]
+    [DataRow("English")]
+    [DataRow("Spanish")]
+    [DataRow("French")]
+    [DataRow("Italian")]
+    public void MerchantFormatStrings_FormatInEveryLanguage(string language)
+    {
+        Messages messages = new Messages();
+        messages.SetCurrentLanguage(language);
+        messages.ReadDictionary();
+
+        StringAssert.Contains(string.Format(messages.GetMessage("merchant_gold"), 10), "10");
+        StringAssert.StartsWith(string.Format(messages.GetMessage("merchant_option_armor"), "1", 8, 10), "1. ");
+        StringAssert.StartsWith(string.Format(messages.GetMessage("merchant_option_leave"), "3"), "3. ");
+    }
+
+    [TestMethod]
+    public void English_SouthPathNarrative_IsRemoved()
+    {
+        Messages messages = new Messages();
+        messages.ReadDictionary();
+        Assert.AreEqual("[south_path_narrative]", messages.GetMessage("south_path_narrative"));
+    }
+
     // Guards every language (including Italian) against missing translations:
     // each language must have every message key that English has.
     [TestMethod]

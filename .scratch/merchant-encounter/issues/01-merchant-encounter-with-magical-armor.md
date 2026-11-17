@@ -8,15 +8,19 @@ Keep the menu numbering from the spec: `1` Magical Armor, `3` Leave. Option `2` 
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] A new player has 10 gold and no armor
-- [ ] Taking the south path shows the merchant introduction, the player's gold, and the menu, and no longer shows the old south narrative
-- [ ] Buying Magical Armor with 10 gold returns *Purchased*, sets gold to 0, adds 8 health points, and the player has armor
-- [ ] Buying Magical Armor without enough gold returns *NotEnoughGold* and leaves gold, health and armor unchanged
-- [ ] Buying Magical Armor when already owned returns *AlreadyOwned* and changes nothing
-- [ ] After a purchase the encounter ends and the path prompt reappears. On a later trip south, Magical Armor is not listed
-- [ ] Leave ends the encounter with nothing bought. Invalid input and not-enough-gold repeat the menu
-- [ ] Character stats and pre-combat stats show Gold and Armor (or "None")
-- [ ] Every new message key exists in all four languages (covered by an automated test)
-- [ ] Merchant purchase rules are covered by MSTest tests that don't touch the console. All existing and new tests pass
+- [x] A new player has 10 gold and no armor
+- [x] Taking the south path shows the merchant introduction, the player's gold, and the menu, and no longer shows the old south narrative
+- [x] Buying Magical Armor with 10 gold returns *Purchased*, sets gold to 0, adds 8 health points, and the player has armor
+- [x] Buying Magical Armor without enough gold returns *NotEnoughGold* and leaves gold, health and armor unchanged
+- [x] Buying Magical Armor when already owned returns *AlreadyOwned* and changes nothing
+- [x] After a purchase the encounter ends and the path prompt reappears. On a later trip south, Magical Armor is not listed
+- [x] Leave ends the encounter with nothing bought. Invalid input and not-enough-gold repeat the menu
+- [x] Character stats and pre-combat stats show Gold and Armor (or "None")
+- [x] Every new message key exists in all four languages (covered by an automated test)
+- [x] Merchant purchase rules are covered by MSTest tests that don't touch the console. All existing and new tests pass
+
+## Comments
+
+Implemented: `Merchant.cs` (MerchantItem, PurchaseResult, Merchant), Player `Gold`/`HasArmor`, merchant menu in `Game.HandleMerchantEncounter`, Gold/Armor stats lines, merchant keys in all four languages (old `south_path_narrative` removed). Tests: `MerchantTests`, `PlayerTests`, `MessagesTests`. Manually played south -> buy -> south -> leave -> north in English, and the menu in French.
