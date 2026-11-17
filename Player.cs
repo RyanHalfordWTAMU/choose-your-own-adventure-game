@@ -14,11 +14,22 @@ public class Player
 
     public const int StartingGold = 10;
 
-    // Spent at the Merchant. Every new player starts with the same amount.
+    // Earned from the Innkeeper and spent at the Inn. Every new player starts with the same amount.
     public int Gold { get; set; } = StartingGold;
 
     // True once the player has bought Magical Armor from the Merchant.
     public bool HasArmor { get; set; }
+
+    // Goods taken while hunting in the Forest, sold to the Innkeeper.
+    public int Meat { get; set; }
+    public int Hides { get; set; }
+
+    // Hunger and Thirst run from 0 to MaxHungerThirst; at the maximum the player is Starving / Parched.
+    public const int MaxHungerThirst = 10;
+    public int Hunger { get; set; }
+    public int Thirst { get; set; }
+    public bool IsStarving => Hunger >= MaxHungerThirst;
+    public bool IsParched => Thirst >= MaxHungerThirst;
 
     public void CreateCharacter(Messages messages)
     {
@@ -159,7 +170,7 @@ public class Player
     }
 
     /// <summary>
-    /// Weapon, gold and armor lines, shared by the character stats and the combat stats
+    /// Weapon, gold, armor, goods, hunger and thirst lines, shared by the character stats and the combat stats
     /// so the two screens can't drift apart.
     /// </summary>
     public List<string> GetEquipmentStatLines(Messages messages)
@@ -174,6 +185,12 @@ public class Player
 
         lines.Add(messages.GetMessage("stats_gold") + Gold);
         lines.Add(messages.GetMessage("stats_armor") + messages.GetMessage(HasArmor ? "item_magical_armor" : "stats_armor_none"));
+        lines.Add(messages.GetMessage("stats_meat") + Meat);
+        lines.Add(messages.GetMessage("stats_hides") + Hides);
+        lines.Add(messages.GetMessage("stats_hunger") + Hunger + "/" + MaxHungerThirst +
+                  (IsStarving ? messages.GetMessage("stats_starving") : ""));
+        lines.Add(messages.GetMessage("stats_thirst") + Thirst + "/" + MaxHungerThirst +
+                  (IsParched ? messages.GetMessage("stats_parched") : ""));
         return lines;
     }
 
@@ -237,7 +254,7 @@ public class Player
 
         // DAMAGE
         int damage = RollDamage();
-        dragon.HealthPoints -= damage;
+        dragon.HealthPoints = Math.Max(0, dragon.HealthPoints - damage);
 
         output.Add(string.Format(messages.GetMessage("player_damage_dealt"), damage));
         output.Add(string.Format(messages.GetMessage("dragon_health_now"), dragon.Name, dragon.HealthPoints));

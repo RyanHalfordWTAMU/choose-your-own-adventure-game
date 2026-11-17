@@ -203,7 +203,7 @@ public class GameTests
     public void IsValidPathChoice_ReturnsFalse_ForInvalidInput()
     {
         Game game = new Game();
-        Assert.IsFalse(game.IsValidPathChoice("west"));
+        Assert.IsFalse(game.IsValidPathChoice("up"));
     }
 
     [TestMethod]
@@ -241,6 +241,16 @@ public class GameTests
     {
         Game game = new Game();
         Assert.IsTrue(game.IsValidMenuChoice("  2  "));
+    }
+
+    [TestMethod]
+    [DataRow("w")]
+    [DataRow("west")]
+    [DataRow("WEST")]
+    public void IsValidPathChoice_ReturnsTrue_ForWest(string input)
+    {
+        Game game = new Game();
+        Assert.IsTrue(game.IsValidPathChoice(input));
     }
 
     // --- IsValidPathChoice: case insensitivity ---

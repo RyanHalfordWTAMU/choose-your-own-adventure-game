@@ -6,11 +6,15 @@ See `.scratch/hunting-and-inn/spec.md` and the root `GLOSSARY.md`.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Crossroads accepts `w`/`west` and reaches the Inn; prompt and invalid-path text list n/s/w/e
-- [ ] Inn menu offers Innkeeper / Merchant / Leave; invalid input shows "invalid" and redisplays
-- [ ] The Merchant at the Inn sells Magical Armor and Enchantments exactly as before, with a rewritten introduction
-- [ ] Leaving the Merchant returns to the Inn menu; leaving the Inn returns to the Crossroads
-- [ ] New and changed message keys exist in all four languages (automated test)
-- [ ] All existing and new tests pass
+- [x] Crossroads accepts `w`/`west` and reaches the Inn; prompt and invalid-path text list n/s/w/e
+- [x] Inn menu offers Innkeeper / Merchant / Leave; invalid input shows "invalid" and redisplays
+- [x] The Merchant at the Inn sells Magical Armor and Enchantments exactly as before, with a rewritten introduction
+- [x] Leaving the Merchant returns to the Inn menu; leaving the Inn returns to the Crossroads
+- [x] New and changed message keys exist in all four languages (automated test)
+- [x] All existing and new tests pass
+
+## Comments
+
+Implemented together with tickets 02–04, so the interim "south still leads to the Merchant" step was skipped. `Game.HandleInn` shows the Inn menu; leaving the Merchant returns to it. The Merchant's intro and leave lines were rewritten for the Inn in all four languages. The prompt uses `w` for West in every language, matching how `n`/`s` already work.

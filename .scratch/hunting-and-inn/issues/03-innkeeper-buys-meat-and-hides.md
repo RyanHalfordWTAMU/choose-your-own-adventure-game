@@ -6,10 +6,14 @@ See `.scratch/hunting-and-inn/spec.md`.
 
 **Blocked by:** 01, 02
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Selling 3 Meat earns 6 gold and leaves 0 Meat; selling 2 Hides earns 8 gold and leaves 0 Hides
-- [ ] Selling with none returns *NothingToSell* and changes nothing
-- [ ] Innkeeper menu repeats after each action and shows current gold; Leave returns to the Inn menu
-- [ ] New message keys exist in all four languages (automated test)
-- [ ] All existing and new tests pass
+- [x] Selling 3 Meat earns 6 gold and leaves 0 Meat; selling 2 Hides earns 8 gold and leaves 0 Hides
+- [x] Selling with none returns *NothingToSell* and changes nothing
+- [x] Innkeeper menu repeats after each action and shows current gold; Leave returns to the Inn menu
+- [x] New message keys exist in all four languages (automated test)
+- [x] All existing and new tests pass
+
+## Comments
+
+Implemented in `Innkeeper.cs` and `Game.HandleInnkeeper`. Selling reports the gold earned through an `out` parameter. Manually played: sold 4 Meat for 8 gold, then bought Magical Armor with hunting money.

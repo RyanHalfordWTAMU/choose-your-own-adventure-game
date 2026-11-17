@@ -35,6 +35,18 @@ To run the application, type the following into the terminal, which looks for an
 dotnet run
 ```
 
+## How to Play
+Create a character, then travel from the **crossroads**:
+
+- **North (`n`)**: face the Dragon. The fight ends the game.
+- **South (`s`)**: hunt in the **Forest**. Each hunt checks your Agility, then rolls for a Rabbit (1 Meat), a Deer (2 Meat + 1 Hide) or a Boar (3 Meat + 1 Hide, but it gores you). Every hunt makes you hungrier and thirstier. Hunting while Starving or Parched costs health.
+- **West (`w`)**: visit the **Inn**.
+  - The **Innkeeper** buys Meat (2 gold) and Hides (4 gold), cooks your Meat for free, and sells meals (3 gold) and drinks (1 gold).
+  - The **Merchant** sells Magical Armor and Enchantments (10 gold each).
+- **Exit (`e`)**: quit.
+
+You start with 10 gold. Hunt and sell to afford more from the Merchant before you face the Dragon. Game terms are defined in `GLOSSARY.md`.
+
 ## Build the App: 
 This command is optional because dotnet run will also build the app prior to running the app if needed. But to build the application without running the application, type this command in the terminal. Building the app let's the compiler compile and warn you of any compile errors or problems.
 ```

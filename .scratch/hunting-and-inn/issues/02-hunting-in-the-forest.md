@@ -6,13 +6,17 @@ See `.scratch/hunting-and-inn/spec.md`.
 
 **Blocked by:** 01 (the Merchant must be reachable at the Inn before south stops leading to it)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] South reaches the Forest; the player can hunt repeatedly and then leave to the Crossroads
-- [ ] A tracking roll above Agility returns not-caught with no goods
-- [ ] Animal rolls 3, 5 and 6 yield Rabbit, Deer and Boar with the right Meat and Hides
-- [ ] A Boar removes the d4 roll from health; health never drops below 0
-- [ ] New player has 0 Meat and 0 Hides; stats show both
-- [ ] If a hunt leaves health at 0, a "collapsed in the forest" defeat message is shown and the game ends
-- [ ] New message keys exist in all four languages (automated test)
-- [ ] All existing and new tests pass
+- [x] South reaches the Forest; the player can hunt repeatedly and then leave to the Crossroads
+- [x] A tracking roll above Agility returns not-caught with no goods
+- [x] Animal rolls 3, 5 and 6 yield Rabbit, Deer and Boar with the right Meat and Hides
+- [x] A Boar removes the d4 roll from health; health never drops below 0
+- [x] New player has 0 Meat and 0 Hides; stats show both
+- [x] If a hunt leaves health at 0, a "collapsed in the forest" defeat message is shown and the game ends
+- [x] New message keys exist in all four languages (automated test)
+- [x] All existing and new tests pass
+
+## Comments
+
+Implemented in `Hunting.cs` (`Hunting`, `HuntResult`, `Animal`) and `Game.HandleForest`. `Die.Roll` is now virtual; tests use a `ScriptedDie`. A catch with no Hide (a Rabbit) uses its own message so it doesn't print "+0 Hide". Manually played: south → 6 hunts → Starving/Parched warnings → 4 health lost on the 6th hunt.

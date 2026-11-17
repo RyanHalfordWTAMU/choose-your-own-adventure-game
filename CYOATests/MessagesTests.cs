@@ -389,6 +389,44 @@ public class MessagesTests
         StringAssert.Contains(string.Format(messages.GetMessage("enchanted_weapon_format"), "WEAPON"), "WEAPON");
     }
 
+    // The completeness test compares against English, so English must have the
+    // Forest and Inn keys, and every language's format strings must accept Game's arguments.
+    [TestMethod]
+    [DataRow("English")]
+    [DataRow("Spanish")]
+    [DataRow("French")]
+    [DataRow("Italian")]
+    public void ForestAndInnStrings_ExistAndFormatInEveryLanguage(string language)
+    {
+        Messages messages = new Messages();
+        messages.SetCurrentLanguage(language);
+        messages.ReadDictionary();
+
+        string[] keys = { "forest_intro", "forest_option_hunt", "forest_option_leave", "forest_leave",
+                          "forest_defeat", "hunt_escaped", "hunt_starving", "hunt_parched",
+                          "animal_rabbit", "animal_deer", "animal_boar", "inn_intro", "inn_menu_header",
+                          "inn_option_innkeeper", "inn_option_merchant", "inn_option_leave", "inn_leave",
+                          "innkeeper_intro", "innkeeper_nothing_to_sell", "innkeeper_ate", "innkeeper_no_meat",
+                          "innkeeper_drank", "innkeeper_leave", "stats_meat", "stats_hides", "stats_hunger",
+                          "stats_thirst", "stats_starving", "stats_parched" };
+        foreach (string key in keys)
+            Assert.AreNotEqual($"[{key}]", messages.GetMessage(key), $"{language} is missing '{key}'.");
+
+        StringAssert.Contains(string.Format(messages.GetMessage("forest_status"), 11, 22, 33, 44, 55, 10), "55");
+        StringAssert.Contains(string.Format(messages.GetMessage("hunt_hunger_damage"), 4), "4");
+        StringAssert.Contains(string.Format(messages.GetMessage("hunt_caught"), "ANIMAL", 3, 1), "ANIMAL");
+        StringAssert.Contains(string.Format(messages.GetMessage("hunt_caught_meat_only"), "ANIMAL", 1, 0), "ANIMAL");
+        StringAssert.Contains(string.Format(messages.GetMessage("hunt_boar_gore"), 3), "3");
+        StringAssert.Contains(string.Format(messages.GetMessage("innkeeper_goods"), 11, 22, 33, 44, 10), "44");
+        StringAssert.StartsWith(string.Format(messages.GetMessage("innkeeper_option_sell_meat"), "1", 2), "1. ");
+        StringAssert.StartsWith(string.Format(messages.GetMessage("innkeeper_option_sell_hides"), "2", 4), "2. ");
+        StringAssert.StartsWith(string.Format(messages.GetMessage("innkeeper_option_cook"), "3"), "3. ");
+        StringAssert.StartsWith(string.Format(messages.GetMessage("innkeeper_option_meal"), "4", 3), "4. ");
+        StringAssert.StartsWith(string.Format(messages.GetMessage("innkeeper_option_drink"), "5", 1), "5. ");
+        StringAssert.Contains(string.Format(messages.GetMessage("innkeeper_sold"), 14), "14");
+        StringAssert.Contains(messages.GetMessage("path_prompt_full"), "'w'");
+    }
+
     [TestMethod]
     [DataRow("English", "Enchanted long sword")]
     [DataRow("Spanish", "espada larga con encantamiento")]

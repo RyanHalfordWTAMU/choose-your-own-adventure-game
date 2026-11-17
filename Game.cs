@@ -55,7 +55,16 @@ public class Game
                     }
                     else if (selectedPath == "south")
                     {
-                        HandleMerchantEncounter(player, messages);
+                        bool playerDied = HandleForest(player, die, messages);
+                        if (playerDied)
+                        {
+                            running = false;
+                            inAdventureMenu = false;
+                        }
+                    }
+                    else if (selectedPath == "west")
+                    {
+                        HandleInn(player, messages);
                     }
                     else if (selectedPath == "north")
                     {
@@ -114,6 +123,7 @@ public class Game
         string trimmed = input.Trim().ToLower();
         return trimmed == "n" || trimmed == "north" ||
                trimmed == "s" || trimmed == "south" ||
+               trimmed == "w" || trimmed == "west" ||
                trimmed == "e" || trimmed == "exit";
     }
 
@@ -139,6 +149,9 @@ public class Game
             if (input == "south" || input == "s")
                 return "south";
 
+            if (input == "west" || input == "w")
+                return "west";
+
             // null means the input stream ended, so there's nothing left to ask.
             if (input == null || input == "exit" || input == "e")
                 return "exit";
@@ -146,6 +159,166 @@ public class Game
             Console.WriteLine(messages.GetMessage("path_invalid"));
         }
     }
+
+    // ---------- Forest ----------
+
+    // Returns true if the player collapsed (health reached 0), which ends the game.
+    private bool HandleForest(Player player, Die die, Messages messages)
+    {
+        Hunting hunting = new Hunting(die);
+
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine(messages.GetMessage("forest_intro"));
+        Console.ResetColor();
+
+        while (true)
+        {
+            Console.WriteLine(string.Format(messages.GetMessage("forest_status"),
+                player.HealthPoints, player.Meat, player.Hides, player.Hunger, player.Thirst, Player.MaxHungerThirst));
+            Console.WriteLine(messages.GetMessage("forest_option_hunt"));
+            Console.WriteLine(messages.GetMessage("forest_option_leave"));
+            Console.Write(messages.GetMessage("enter_choice"));
+            string? input = Console.ReadLine()?.Trim();
+
+            // null means the input stream ended; treat it as leaving instead of looping forever.
+            if (input == null || input == "2")
+            {
+                Console.WriteLine(messages.GetMessage("forest_leave"));
+                return false;
+            }
+
+            if (input != "1")
+            {
+                Console.WriteLine(messages.GetMessage("invalid"));
+                continue;
+            }
+
+            HuntResult result = hunting.Hunt(player);
+            DescribeHunt(result, player, messages);
+
+            if (player.HealthPoints <= 0)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(messages.GetMessage("forest_defeat"));
+                Console.ResetColor();
+                return true;
+            }
+        }
+    }
+
+    private static void DescribeHunt(HuntResult result, Player player, Messages messages)
+    {
+        if (result.HungerThirstDamage > 0)
+            Console.WriteLine(string.Format(messages.GetMessage("hunt_hunger_damage"), result.HungerThirstDamage));
+
+        if (!result.Caught)
+        {
+            Console.WriteLine(messages.GetMessage("hunt_escaped"));
+        }
+        else
+        {
+            string animalName = messages.GetMessage(result.Animal switch
+            {
+                Animal.Rabbit => "animal_rabbit",
+                Animal.Deer => "animal_deer",
+                _ => "animal_boar"
+            });
+            string caughtKey = result.HidesGained > 0 ? "hunt_caught" : "hunt_caught_meat_only";
+            Console.WriteLine(string.Format(messages.GetMessage(caughtKey), animalName, result.MeatGained, result.HidesGained));
+
+            if (result.GoreDamage > 0)
+                Console.WriteLine(string.Format(messages.GetMessage("hunt_boar_gore"), result.GoreDamage));
+        }
+
+        if (player.IsStarving)
+            Console.WriteLine(messages.GetMessage("hunt_starving"));
+        if (player.IsParched)
+            Console.WriteLine(messages.GetMessage("hunt_parched"));
+    }
+
+    // ---------- Inn ----------
+
+    private void HandleInn(Player player, Messages messages)
+    {
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine(messages.GetMessage("inn_intro"));
+        Console.ResetColor();
+
+        while (true)
+        {
+            Console.WriteLine(messages.GetMessage("inn_menu_header"));
+            Console.WriteLine(messages.GetMessage("inn_option_innkeeper"));
+            Console.WriteLine(messages.GetMessage("inn_option_merchant"));
+            Console.WriteLine(messages.GetMessage("inn_option_leave"));
+            Console.Write(messages.GetMessage("enter_choice"));
+            string? input = Console.ReadLine()?.Trim();
+
+            if (input == null || input == "3")
+            {
+                Console.WriteLine(messages.GetMessage("inn_leave"));
+                return;
+            }
+
+            if (input == "1")
+                HandleInnkeeper(player, messages);
+            else if (input == "2")
+                HandleMerchantEncounter(player, messages);
+            else
+                Console.WriteLine(messages.GetMessage("invalid"));
+        }
+    }
+
+    private void HandleInnkeeper(Player player, Messages messages)
+    {
+        Innkeeper innkeeper = new Innkeeper();
+        Console.WriteLine(messages.GetMessage("innkeeper_intro"));
+
+        while (true)
+        {
+            Console.WriteLine(string.Format(messages.GetMessage("merchant_gold"), player.Gold));
+            Console.WriteLine(string.Format(messages.GetMessage("innkeeper_goods"),
+                player.Meat, player.Hides, player.Hunger, player.Thirst, Player.MaxHungerThirst));
+            Console.WriteLine(string.Format(messages.GetMessage("innkeeper_option_sell_meat"), "1", Innkeeper.MeatPrice));
+            Console.WriteLine(string.Format(messages.GetMessage("innkeeper_option_sell_hides"), "2", Innkeeper.HidePrice));
+            Console.WriteLine(string.Format(messages.GetMessage("innkeeper_option_cook"), "3"));
+            Console.WriteLine(string.Format(messages.GetMessage("innkeeper_option_meal"), "4", Innkeeper.MealPrice));
+            Console.WriteLine(string.Format(messages.GetMessage("innkeeper_option_drink"), "5", Innkeeper.DrinkPrice));
+            Console.WriteLine(string.Format(messages.GetMessage("merchant_option_leave"), "6"));
+            Console.Write(messages.GetMessage("enter_choice"));
+            string? input = Console.ReadLine()?.Trim();
+
+            if (input == null || input == "6")
+            {
+                Console.WriteLine(messages.GetMessage("innkeeper_leave"));
+                return;
+            }
+
+            int goldEarned = 0;
+            InnkeeperResult? result = input switch
+            {
+                "1" => innkeeper.SellMeat(player, out goldEarned),
+                "2" => innkeeper.SellHides(player, out goldEarned),
+                "3" => innkeeper.CookMeat(player),
+                "4" => innkeeper.BuyMeal(player),
+                "5" => innkeeper.BuyDrink(player),
+                _ => null
+            };
+
+            string message = result switch
+            {
+                InnkeeperResult.Sold => string.Format(messages.GetMessage("innkeeper_sold"), goldEarned),
+                InnkeeperResult.NothingToSell => messages.GetMessage("innkeeper_nothing_to_sell"),
+                InnkeeperResult.Eaten => messages.GetMessage("innkeeper_ate"),
+                InnkeeperResult.NoMeat => messages.GetMessage("innkeeper_no_meat"),
+                InnkeeperResult.Drank => messages.GetMessage("innkeeper_drank"),
+                InnkeeperResult.NotEnoughGold => messages.GetMessage("merchant_not_enough_gold"),
+                _ => messages.GetMessage("invalid")
+            };
+            Console.WriteLine(message);
+        }
+    }
+
+    // ---------- Merchant ----------
 
     // Menu numbers stay fixed so they don't shift when an owned item is left off the list.
     // They're formatted into the translated menu lines, so this is the only place they live.
